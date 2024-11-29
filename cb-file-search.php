@@ -17,7 +17,8 @@ function fsp_register_admin_menu()
         'File Search',
         'manage_options',
         'fsp-settings',
-        'fsp_render_admin_page'
+        'fsp_render_admin_page',
+        'dashicons-search',
     );
 }
 add_action('admin_menu', 'fsp_register_admin_menu');
