@@ -172,7 +172,7 @@ function fsp_register_shortcode()
                             // Add file info
                             const fileInfo = document.createElement("div");
                             fileInfo.classList.add("file-info");
-                            fileInfo.textContent = `Size: ${(file.size / 1024).toFixed(2)} KB, Date: ${file.date}`;
+                            fileInfo.textContent = `' . pll__('Size:', 'cb-aos2024') . ' ${(file.size / 1024).toFixed(2)} KB, ' . pll__('Date:') . ' ${file.date}`;
 
                             // Append elements
                             listItem.appendChild(fileLink);
