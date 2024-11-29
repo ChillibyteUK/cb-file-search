@@ -181,7 +181,7 @@ function fsp_register_shortcode()
                         });
 
                     } else {
-                        resultsContainer.innerHTML = "<li>No files found.</li>";
+                        resultsContainer.innerHTML = "<li>' . pll__('No files found.', 'cb-aos2024') . '</li>";
                     }
                 });
         });
