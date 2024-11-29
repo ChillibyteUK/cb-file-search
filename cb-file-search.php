@@ -136,7 +136,7 @@ function fsp_register_shortcode()
         <input type="text" id="fsp-search" name="fsp-search" class="form-control">
         </div>
         <div class="col-sm-3">
-            <button id="fsp-search-btn" class="btn btn-secondary">Search</button>
+            <button id="fsp-search-btn" class="btn btn-secondary">' . pll__('Search', 'cb-aos2024') . '</button>
         </div>
     </div>
         <div id="fsp-results-header"></div>
@@ -155,7 +155,7 @@ function fsp_register_shortcode()
                     if (data.exceedsLimit) {
                         header.textContent = data.messageText;
                     } else {
-                        header.textContent = `Found ${data.results.length} result(s) out of ${data.totalFiles} files.`;
+                        header.textContent = `' . pll__('Found', 'cb-aos2024') . ' ${data.results.length} ' . pll__('result(s) out of', 'cb-aos2024') . ' ${data.totalFiles} ' . pll__('files.', 'cb-aos2024') . '`;
                     }
 
                     if (data.results.length > 0) {
