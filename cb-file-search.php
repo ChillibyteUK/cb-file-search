@@ -31,12 +31,10 @@ function fsp_render_admin_page()
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         update_option('fsp_search_folder', sanitize_text_field(wp_unslash($_POST['fsp_search_folder'])));
         update_option('fsp_max_results', intval(wp_unslash($_POST['fsp_max_results'])));
-        // update_option('fsp_message_text', sanitize_textarea_field(wp_unslash($_POST['fsp_message_text'])));
     }
 
     $folder = get_option('fsp_search_folder', WP_CONTENT_DIR . '/uploads');
     $maxResults = get_option('fsp_max_results', 10);
-    // $messageText = get_option('fsp_message_text', 'Your search for [string] returns more than [n] results.');
 
 ?>
     <div class="wrap">
@@ -51,10 +49,6 @@ function fsp_render_admin_page()
                     <th scope="row"><label for="fsp_max_results">Maximum Results</label></th>
                     <td><input type="number" name="fsp_max_results" id="fsp_max_results" value="<?php echo esc_attr($maxResults); ?>" class="small-text"></td>
                 </tr>
-                <!-- <tr>
-                    <th scope="row"><label for="fsp_message_text">Message Text</label></th>
-                    <td><textarea name="fsp_message_text" id="fsp_message_text" rows="3" class="large-text"><?php echo esc_textarea($messageText); ?></textarea></td>
-                </tr> -->
             </table>
             <p class="submit"><button type="submit" class="button button-primary">Save Changes</button></p>
         </form>
@@ -83,11 +77,19 @@ function fsp_render_admin_page()
 // Handle AJAX search request
 function fsp_handle_ajax_search()
 {
+
+    if (function_exists('pll_set_language') && isset($_GET['lang'])) {
+        pll_set_language(sanitize_text_field($_GET['lang']));
+    }
+    if (function_exists('pll__')) {
+        $messageText = pll__('Your search for [string] returns more than [n] results.', 'cb-aos2024');
+    } else {
+        $messageText = 'Your xxsearch for [string] returns more than [n] results.';
+    }
+
     $folder = get_option('fsp_search_folder', WP_CONTENT_DIR . '/uploads');
     $baseUrl = home_url(str_replace(ABSPATH, '', $folder)); // Convert to public URL based on home URL
     $maxResults = get_option('fsp_max_results', 10);
-    // $messageText = get_option('fsp_message_text', 'Your search for [string] returns more than [n] results.');
-    $messageText = 'Your search for [string] returns more than [n] results.';
 
     $search = isset($_GET['search']) ? sanitize_text_field($_GET['search']) : '';
     $results = [];
@@ -128,6 +130,7 @@ add_action('wp_ajax_fsp_search', 'fsp_handle_ajax_search');
 add_action('wp_ajax_nopriv_fsp_search', 'fsp_handle_ajax_search');
 
 // Register shortcode
+
 function fsp_register_shortcode()
 {
     return '<div id="file-search-app">
@@ -145,14 +148,15 @@ function fsp_register_shortcode()
         <script>
         document.getElementById("fsp-search-btn").addEventListener("click", function() {
             const searchQuery = document.getElementById("fsp-search").value;
+            const currentLanguage = "' . pll_current_language() . '";
 
-            fetch("' . admin_url('admin-ajax.php') . '?action=fsp_search&search=" + encodeURIComponent(searchQuery))
+            fetch("' . admin_url('admin-ajax.php') . '?action=fsp_search&search=" + encodeURIComponent(searchQuery) + "&lang=" + currentLanguage)
                 .then(response => response.json())
                 .then(data => {
                     const header = document.getElementById("fsp-results-header");
                     const resultsContainer = document.getElementById("fsp-results");
                     resultsContainer.innerHTML = "";
-                    
+                   
                     if (data.exceedsLimit) {
                         header.textContent = data.messageText;
                     } else {
@@ -173,7 +177,7 @@ function fsp_register_shortcode()
                             // Add file info
                             const fileInfo = document.createElement("div");
                             fileInfo.classList.add("file-info");
-                            fileInfo.textContent = `' . pll__('Size:', 'cb-aos2024') . ' ${(file.size / 1024).toFixed(2)} KB, ' . pll__('Date:') . ' ${file.date}`;
+                            fileInfo.textContent = `' . pll__('Size:', 'cb-aos2024') . ' ${(file.size / 1024).toFixed(2)} KB, ' . pll__('Date:', 'cb-aos2024') . ' ${file.date}`;
 
                             // Append elements
                             listItem.appendChild(fileLink);
