@@ -86,7 +86,8 @@ function fsp_handle_ajax_search()
     $folder = get_option('fsp_search_folder', WP_CONTENT_DIR . '/uploads');
     $baseUrl = home_url(str_replace(ABSPATH, '', $folder)); // Convert to public URL based on home URL
     $maxResults = get_option('fsp_max_results', 10);
-    $messageText = pll__get_option('fsp_message_text', 'Your search for [string] returns more than [n] results.');
+    // $messageText = get_option('fsp_message_text', 'Your search for [string] returns more than [n] results.');
+    $messageText = 'Your search for [string] returns more than [n] results.';
 
     $search = isset($_GET['search']) ? sanitize_text_field($_GET['search']) : '';
     $results = [];
