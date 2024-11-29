@@ -131,7 +131,7 @@ function fsp_register_shortcode()
 {
     return '<div id="file-search-app">
     <div class="row">
-        <label for="fsp-search" class="col-auto col-form-label">Search:</label>
+        <label for="fsp-search" class="col-auto col-form-label">' . pll__('Search:', 'cb-aos2024') . '</label>
         <div class="col-sm-4">
         <input type="text" id="fsp-search" name="fsp-search" class="form-control">
         </div>
