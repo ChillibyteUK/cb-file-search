@@ -77,39 +77,40 @@ function fsp_render_admin_page()
 // Handle AJAX search request
 function fsp_handle_ajax_search()
 {
-
     if (function_exists('pll_set_language') && isset($_GET['lang'])) {
         pll_set_language(sanitize_text_field($_GET['lang']));
     }
+
     if (function_exists('pll__')) {
         $messageText = pll__('Your search for [string] returns more than [n] results.', 'cb-aos2024');
     } else {
-        $messageText = 'Your xxsearch for [string] returns more than [n] results.';
+        $messageText = 'Your search for [string] returns more than [n] results.';
     }
 
-    $folder = get_option('fsp_search_folder', WP_CONTENT_DIR . '/uploads');
-    $baseUrl = home_url(str_replace(ABSPATH, '', $folder)); // Convert to public URL based on home URL
+    // $folder = get_option('fsp_search_folder', WP_CONTENT_DIR . '/');
+    $indexFile = ABSPATH . '/files/index.json';
     $maxResults = get_option('fsp_max_results', 10);
 
     $search = isset($_GET['search']) ? sanitize_text_field($_GET['search']) : '';
     $results = [];
     $totalFiles = 0;
 
-    if (is_dir($folder)) {
-        $files = scandir($folder);
-        $totalFiles = count(array_filter($files, function ($file) {
-            return $file !== '.' && $file !== '..';
-        }));
+    if (file_exists($indexFile)) {
+        // Load the index.json file
+        $indexData = json_decode(file_get_contents($indexFile), true);
 
-        foreach ($files as $file) {
-            if ($file !== '.' && $file !== '..' && stripos($file, $search) !== false) {
-                $filePath = $folder . '/' . $file;
-                $results[] = [
-                    'name' => $file,
-                    'size' => filesize($filePath),
-                    'date' => date("Y-m-d H:i:s", filemtime($filePath)),
-                    'url' => $baseUrl . '/' . rawurlencode($file) // Include public URL for the file
-                ];
+        if (is_array($indexData)) {
+            $totalFiles = count($indexData);
+
+            foreach ($indexData as $file) {
+                if (stripos($file['name'], $search) !== false) {
+                    $results[] = [
+                        'name' => $file['name'],
+                        'size' => file_exists(ABSPATH . $file['path']) ? filesize(ABSPATH . $file['path']) : 0,
+                        'date' => file_exists(ABSPATH . $file['path']) ? date("Y-m-d H:i:s", filemtime(ABSPATH . $file['path'])) : '',
+                        'url' => home_url($file['path']),
+                    ];
+                }
             }
         }
     }
