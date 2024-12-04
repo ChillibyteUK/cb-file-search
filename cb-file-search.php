@@ -87,8 +87,7 @@ function fsp_handle_ajax_search()
         $messageText = 'Your search for [string] returns more than [n] results.';
     }
 
-    // $folder = get_option('fsp_search_folder', WP_CONTENT_DIR . '/');
-    $indexFile = ABSPATH . '/files/index.json';
+    $indexFile = ABSPATH . '/files/index.json'; // Path to index.json
     $maxResults = get_option('fsp_max_results', 10);
 
     $search = isset($_GET['search']) ? sanitize_text_field($_GET['search']) : '';
@@ -106,9 +105,9 @@ function fsp_handle_ajax_search()
                 if (stripos($file['name'], $search) !== false) {
                     $results[] = [
                         'name' => $file['name'],
-                        'size' => file_exists(ABSPATH . $file['path']) ? filesize(ABSPATH . $file['path']) : 0,
-                        'date' => file_exists(ABSPATH . $file['path']) ? date("Y-m-d H:i:s", filemtime(ABSPATH . $file['path'])) : '',
-                        'url' => home_url($file['path']),
+                        'size' => isset($file['size']) ? $file['size'] : 0, // Use size from JSON
+                        'date' => isset($file['modified']) ? $file['modified'] : '', // Use modified from JSON
+                        'url' => home_url($file['path']), // Construct file URL
                     ];
                 }
             }
@@ -127,6 +126,7 @@ function fsp_handle_ajax_search()
         'messageText' => str_replace(['[string]', '[n]'], [$search, $maxResults], $messageText),
     ]);
 }
+
 add_action('wp_ajax_fsp_search', 'fsp_handle_ajax_search');
 add_action('wp_ajax_nopriv_fsp_search', 'fsp_handle_ajax_search');
 
